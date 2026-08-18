@@ -1,0 +1,15 @@
+enum HdmiInput {
+  GOOGLE_TV
+  APPLE_TV
+  PS3
+  PS4
+  SWITCH
+}
+
+type Query {
+  currentInput: HdmiInput!
+}
+
+type Mutation {
+  setInput(input: HdmiInput!): HdmiInput!
+}

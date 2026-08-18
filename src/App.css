@@ -1,0 +1,164 @@
+.app {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.app-header {
+  padding: max(20px, env(safe-area-inset-top)) 20px 12px;
+  text-align: center;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 16px calc(24px + env(safe-area-inset-bottom));
+}
+
+.status-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--text);
+}
+
+.status-panel--inline {
+  flex: none;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.status-panel--error {
+  color: var(--error);
+}
+
+.status-panel--inline.status-panel--error {
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+}
+
+.status-detail {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.retry-button {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--error-border);
+  background: var(--surface);
+  color: var(--error);
+  cursor: pointer;
+}
+
+.retry-button:active {
+  transform: scale(0.97);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.input-button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 12px;
+  min-height: 120px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-h);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition:
+    transform 0.1s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.input-button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.input-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.input-button--active {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.input-button--active:disabled {
+  opacity: 1;
+}
+
+.input-button__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-button__label {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.input-button__badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--accent-text);
+  background: var(--accent);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+/* Last item (odd count of 5) spans both columns so it isn't left dangling
+   alone in a lopsided single-column row. */
+.input-grid > :nth-child(5) {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 420px) {
+  .input-button {
+    min-height: 132px;
+  }
+}

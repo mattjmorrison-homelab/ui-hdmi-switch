@@ -1,0 +1,7 @@
+query CurrentInput {
+  currentInput
+}
+
+mutation SetInput($input: HdmiInput!) {
+  setInput(input: $input)
+}
