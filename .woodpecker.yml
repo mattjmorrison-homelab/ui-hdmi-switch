@@ -17,6 +17,7 @@ steps:
   test:
     image: registry.morrisons.site/ui-hdmi-switch-test:${CI_COMMIT_SHA}
     commands:
+      - npm ci
       - npm run check
 
   build-release:
