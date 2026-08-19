@@ -3,16 +3,22 @@ set -eu
 
 apk add --no-cache curl jq >/dev/null
 
+URL="https://hdmi-switch.morrisons.site/version.json"
+
 # Argo CD Image Updater only polls the registry every ~2 minutes, plus sync
 # and rollout time on top of that — so this needs a budget comfortably
 # longer than one poll cycle, not just a few seconds of slack.
 for i in $(seq 1 20); do
-  ACTUAL=$(curl -sf https://hdmi-switch.morrisons.site/version.json | jq -r '.commit_sha')
+  RESPONSE=$(curl -s -w '\n%{http_code}' "$URL")
+  STATUS=$(echo "$RESPONSE" | tail -n1)
+  BODY=$(echo "$RESPONSE" | sed '$d')
+  ACTUAL=$(echo "$BODY" | jq -r '.commit_sha' 2>/dev/null || echo "<unparseable: $BODY>")
+  echo "attempt $i: HTTP $STATUS, commit_sha='$ACTUAL', expected='$CI_COMMIT_SHA'"
+
   if [ "$ACTUAL" = "$CI_COMMIT_SHA" ]; then
     echo "PASS: deployed commit_sha matches $CI_COMMIT_SHA"
     exit 0
   fi
-  echo "attempt $i: got '$ACTUAL', expected '$CI_COMMIT_SHA', retrying..."
   sleep 15
 done
 
