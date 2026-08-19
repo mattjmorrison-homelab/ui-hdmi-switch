@@ -7,15 +7,18 @@ import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type HdmiInput =
   | 'APPLE_TV'
-  | 'GOOGLE_TV'
+  | 'PC'
   | 'PS3'
   | 'PS4'
-  | 'SWITCH';
+  | 'SWITCH'
+  | 'UNUSED_6'
+  | 'UNUSED_7'
+  | 'UNUSED_8';
 
-export type CurrentInputQueryVariables = Exact<{ [key: string]: never; }>;
+export type InputsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentInputQuery = { currentInput: HdmiInput };
+export type InputsQuery = { inputs: Array<{ value: HdmiInput, label: string, icon: string, hoverText: string, isActive: boolean }> };
 
 export type SetInputMutationVariables = Exact<{
   input: HdmiInput;
@@ -25,46 +28,52 @@ export type SetInputMutationVariables = Exact<{
 export type SetInputMutation = { setInput: HdmiInput };
 
 
-export const CurrentInputDocument = gql`
-    query CurrentInput {
-  currentInput
+export const InputsDocument = gql`
+    query Inputs {
+  inputs {
+    value
+    label
+    icon
+    hoverText
+    isActive
+  }
 }
     `;
 
 /**
- * __useCurrentInputQuery__
+ * __useInputsQuery__
  *
- * To run a query within a React component, call `useCurrentInputQuery` and pass it any options that fit your needs.
- * When your component renders, `useCurrentInputQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useInputsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useInputsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCurrentInputQuery({
+ * const { data, loading, error } = useInputsQuery({
  *   variables: {
  *   },
  * });
  */
-export function useCurrentInputQuery(baseOptions?: Apollo.QueryHookOptions<CurrentInputQuery, CurrentInputQueryVariables>) {
+export function useInputsQuery(baseOptions?: Apollo.QueryHookOptions<InputsQuery, InputsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CurrentInputQuery, CurrentInputQueryVariables>(CurrentInputDocument, options);
+        return Apollo.useQuery<InputsQuery, InputsQueryVariables>(InputsDocument, options);
       }
-export function useCurrentInputLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CurrentInputQuery, CurrentInputQueryVariables>) {
+export function useInputsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<InputsQuery, InputsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CurrentInputQuery, CurrentInputQueryVariables>(CurrentInputDocument, options);
+          return Apollo.useLazyQuery<InputsQuery, InputsQueryVariables>(InputsDocument, options);
         }
 // @ts-ignore
-export function useCurrentInputSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CurrentInputQuery, CurrentInputQueryVariables>): Apollo.UseSuspenseQueryResult<CurrentInputQuery, CurrentInputQueryVariables>;
-export function useCurrentInputSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<CurrentInputQuery, CurrentInputQueryVariables>): Apollo.UseSuspenseQueryResult<CurrentInputQuery | undefined, CurrentInputQueryVariables>;
-export function useCurrentInputSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<CurrentInputQuery, CurrentInputQueryVariables>) {
+export function useInputsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<InputsQuery, InputsQueryVariables>): Apollo.UseSuspenseQueryResult<InputsQuery, InputsQueryVariables>;
+export function useInputsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<InputsQuery, InputsQueryVariables>): Apollo.UseSuspenseQueryResult<InputsQuery | undefined, InputsQueryVariables>;
+export function useInputsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<InputsQuery, InputsQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<CurrentInputQuery, CurrentInputQueryVariables>(CurrentInputDocument, options);
+          return Apollo.useSuspenseQuery<InputsQuery, InputsQueryVariables>(InputsDocument, options);
         }
-export type CurrentInputQueryHookResult = ReturnType<typeof useCurrentInputQuery>;
-export type CurrentInputLazyQueryHookResult = ReturnType<typeof useCurrentInputLazyQuery>;
-export type CurrentInputSuspenseQueryHookResult = ReturnType<typeof useCurrentInputSuspenseQuery>;
-export type CurrentInputQueryResult = Apollo.QueryResult<CurrentInputQuery, CurrentInputQueryVariables>;
+export type InputsQueryHookResult = ReturnType<typeof useInputsQuery>;
+export type InputsLazyQueryHookResult = ReturnType<typeof useInputsLazyQuery>;
+export type InputsSuspenseQueryHookResult = ReturnType<typeof useInputsSuspenseQuery>;
+export type InputsQueryResult = Apollo.QueryResult<InputsQuery, InputsQueryVariables>;
 export const SetInputDocument = gql`
     mutation SetInput($input: HdmiInput!) {
   setInput(input: $input)

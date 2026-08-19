@@ -1,13 +1,24 @@
 enum HdmiInput {
-  GOOGLE_TV
   APPLE_TV
+  PC
+  SWITCH
   PS3
   PS4
-  SWITCH
+  UNUSED_6
+  UNUSED_7
+  UNUSED_8
+}
+
+type Input {
+  value: HdmiInput!
+  label: String!
+  icon: String!
+  hoverText: String!
+  isActive: Boolean!
 }
 
 type Query {
-  currentInput: HdmiInput!
+  inputs: [Input!]!
 }
 
 type Mutation {

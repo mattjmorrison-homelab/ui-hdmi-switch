@@ -1,26 +1,29 @@
 import { useState } from 'react';
 import { AlertTriangle, Check, Loader2, RefreshCw } from 'lucide-react';
-import { useCurrentInputQuery, useSetInputMutation } from './graphql/generated';
+import { useInputsQuery, useSetInputMutation, type InputsQuery } from './graphql/generated';
 import type { HdmiInput } from './graphql/generated';
-import { INPUTS } from './inputs';
+import { ICONS, DEFAULT_ICON } from './inputs';
 import { errorMessage } from './errorMessage';
 import './App.css';
 
+type Input = InputsQuery['inputs'][number];
+
 function App() {
-  const { data, loading, error, refetch } = useCurrentInputQuery();
+  const { data, loading, error, refetch } = useInputsQuery();
   const [setInput, { loading: switching }] = useSetInputMutation();
 
-  // Tracks the result of the most recent successful `setInput` mutation so it
-  // can override the initial query's answer without re-fetching. Falls back
-  // to the query's value until we have one of our own.
+  // Tracks the result of the most recent successful `setInput` mutation so
+  // it can override the query's `isActive` flags without a refetch. Falls
+  // back to each input's own `isActive` field until we have one of our own.
   const [switchedTo, setSwitchedTo] = useState<HdmiInput | null>(null);
   const [pendingInput, setPendingInput] = useState<HdmiInput | null>(null);
   const [switchError, setSwitchError] = useState<string | null>(null);
 
-  const activeInput = switchedTo ?? data?.currentInput ?? null;
+  const inputs = data?.inputs ?? [];
+  const [heroInput, ...pairedInputs] = inputs;
 
-  const handleSelect = async (value: HdmiInput) => {
-    if (switching || value === activeInput) {
+  const handleSelect = async (value: HdmiInput, isCurrentlyActive: boolean) => {
+    if (switching || isCurrentlyActive) {
       return;
     }
 
@@ -41,6 +44,38 @@ function App() {
     } finally {
       setPendingInput(null);
     }
+  };
+
+  const renderButton = (input: Input) => {
+    const isActive = switchedTo ? input.value === switchedTo : input.isActive;
+    const isPending = input.value === pendingInput;
+    const Icon = ICONS[input.icon] ?? DEFAULT_ICON;
+    return (
+      <button
+        key={input.value}
+        type="button"
+        title={input.hoverText}
+        className={`input-button${isActive ? ' input-button--active' : ''}`}
+        onClick={() => handleSelect(input.value, isActive)}
+        disabled={switching}
+        aria-pressed={isActive}
+      >
+        <span className="input-button__icon">
+          {isPending ? (
+            <Loader2 className="spin" size={28} aria-hidden="true" />
+          ) : (
+            <Icon size={28} aria-hidden="true" />
+          )}
+        </span>
+        <span className="input-button__label">{input.label}</span>
+        {isActive && !isPending && (
+          <span className="input-button__badge">
+            <Check size={14} aria-hidden="true" />
+            Active
+          </span>
+        )}
+      </button>
+    );
   };
 
   return (
@@ -71,36 +106,13 @@ function App() {
 
         {!loading && !error && (
           <>
-            <div className="input-grid" role="group" aria-label="HDMI inputs">
-              {INPUTS.map(({ value, label, icon: Icon }) => {
-                const isActive = value === activeInput;
-                const isPending = value === pendingInput;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    className={`input-button${isActive ? ' input-button--active' : ''}`}
-                    onClick={() => handleSelect(value)}
-                    disabled={switching}
-                    aria-pressed={isActive}
-                  >
-                    <span className="input-button__icon">
-                      {isPending ? (
-                        <Loader2 className="spin" size={28} aria-hidden="true" />
-                      ) : (
-                        <Icon size={28} aria-hidden="true" />
-                      )}
-                    </span>
-                    <span className="input-button__label">{label}</span>
-                    {isActive && !isPending && (
-                      <span className="input-button__badge">
-                        <Check size={14} aria-hidden="true" />
-                        Active
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+            <div className="input-layout" role="group" aria-label="HDMI inputs">
+              {heroInput && (
+                <div className="input-row input-row--hero">{renderButton(heroInput)}</div>
+              )}
+              {pairedInputs.length > 0 && (
+                <div className="input-grid">{pairedInputs.map(renderButton)}</div>
+              )}
             </div>
 
             {switchError && (

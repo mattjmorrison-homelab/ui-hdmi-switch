@@ -6,7 +6,7 @@ import { delay, HttpResponse } from 'msw';
 import App from './App';
 import { apolloClient } from './apolloClient';
 import { server } from './test/msw/server';
-import { api } from './test/msw/handlers';
+import { api, DEFAULT_INPUTS } from './test/msw/handlers';
 
 function renderApp() {
   return render(
@@ -28,6 +28,35 @@ describe('App', () => {
       'aria-pressed',
       'false',
     );
+  });
+
+  it('renders Apple TV as a full-width hero row above the paired rows', async () => {
+    renderApp();
+
+    const appleTvButton = await screen.findByRole('button', { name: /apple tv/i });
+    const group = screen.getByRole('group', { name: /hdmi inputs/i });
+
+    // Hero row is its own direct child of the layout, separate from the
+    // two-per-row grid the rest of the buttons live in.
+    expect(group.firstElementChild).toContainElement(appleTvButton);
+    expect(group.children).toHaveLength(2);
+  });
+
+  it('falls back to a default icon for an unrecognized icon key', async () => {
+    server.use(
+      api.query('Inputs', () =>
+        HttpResponse.json({
+          data: {
+            inputs: [{ ...DEFAULT_INPUTS[0], icon: 'some-future-icon-key-not-yet-mapped' }],
+          },
+        }),
+      ),
+    );
+
+    renderApp();
+
+    const button = await screen.findByRole('button', { name: /apple tv/i });
+    expect(button.querySelector('svg')).toBeInTheDocument();
   });
 
   it('switches to a tapped input, showing a pending state before it confirms', async () => {
@@ -57,9 +86,7 @@ describe('App', () => {
 
   it('shows a visible error when the initial load fails', async () => {
     server.use(
-      api.query('CurrentInput', () =>
-        HttpResponse.json({ errors: [{ message: 'device unreachable' }] }),
-      ),
+      api.query('Inputs', () => HttpResponse.json({ errors: [{ message: 'device unreachable' }] })),
     );
 
     renderApp();
@@ -120,9 +147,7 @@ describe('App', () => {
 
   it('lets the user retry after the initial load fails', async () => {
     server.use(
-      api.query('CurrentInput', () =>
-        HttpResponse.json({ errors: [{ message: 'device unreachable' }] }),
-      ),
+      api.query('Inputs', () => HttpResponse.json({ errors: [{ message: 'device unreachable' }] })),
     );
 
     const user = userEvent.setup();
@@ -130,9 +155,7 @@ describe('App', () => {
 
     const retryButton = await screen.findByRole('button', { name: /retry/i });
 
-    server.use(
-      api.query('CurrentInput', () => HttpResponse.json({ data: { currentInput: 'PS4' } })),
-    );
+    server.use(api.query('Inputs', () => HttpResponse.json({ data: { inputs: DEFAULT_INPUTS } })));
     await user.click(retryButton);
 
     const ps4Button = await screen.findByRole('button', { name: /ps4/i });

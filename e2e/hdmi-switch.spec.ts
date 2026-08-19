@@ -7,6 +7,28 @@ const GRAPHQL_URL = 'https://graphql.morrisons.site/';
 // assume which input is active, and it never switches anything).
 const MOCKS_ENABLED = process.env.E2E_MOCK_API !== 'false';
 
+interface InputFixture {
+  value: string;
+  label: string;
+  icon: string;
+  hoverText: string;
+  isActive: boolean;
+}
+
+// Matches the real backend's configured order: Apple TV renders as the
+// hero row, the rest pair up two-per-row.
+const BASE_INPUTS: readonly Omit<InputFixture, 'isActive'>[] = [
+  { value: 'APPLE_TV', label: 'Apple TV', icon: 'tv', hoverText: 'Apple TV' },
+  { value: 'PC', label: 'PC', icon: 'monitor', hoverText: 'PC' },
+  { value: 'SWITCH', label: 'Switch', icon: 'joystick', hoverText: 'Nintendo Switch' },
+  { value: 'PS3', label: 'PS3', icon: 'gamepad', hoverText: 'PlayStation 3' },
+  { value: 'PS4', label: 'PS4', icon: 'gamepad-2', hoverText: 'PlayStation 4' },
+];
+
+function inputsFixture(activeValue: string): InputFixture[] {
+  return BASE_INPUTS.map((input) => ({ ...input, isActive: input.value === activeValue }));
+}
+
 async function mockGraphql(
   page: Page,
   handlers: Record<
@@ -33,8 +55,8 @@ async function mockGraphql(
 
 test('shows the currently active input on load', async ({ page }) => {
   await mockGraphql(page, {
-    CurrentInput: async (route) => {
-      await route.fulfill({ json: { data: { currentInput: 'PS3' } } });
+    Inputs: async (route) => {
+      await route.fulfill({ json: { data: { inputs: inputsFixture('PS3') } } });
     },
   });
 
@@ -51,8 +73,8 @@ test('shows the currently active input on load', async ({ page }) => {
 
 test('tapping an input switches it, showing a loading state first', async ({ page }) => {
   await mockGraphql(page, {
-    CurrentInput: async (route) => {
-      await route.fulfill({ json: { data: { currentInput: 'PS3' } } });
+    Inputs: async (route) => {
+      await route.fulfill({ json: { data: { inputs: inputsFixture('PS3') } } });
     },
     SetInput: async (route, body) => {
       // Slow this down slightly so the pending/disabled state is observable.
@@ -80,7 +102,7 @@ test('shows a visible error when the backend reports the device is unreachable',
   page,
 }) => {
   await mockGraphql(page, {
-    CurrentInput: async (route) => {
+    Inputs: async (route) => {
       await route.fulfill({ json: { errors: [{ message: 'device unreachable' }] } });
     },
   });
@@ -97,8 +119,8 @@ test('shows a visible error when the backend reports the device is unreachable',
 test('shows a visible error and keeps prior state when switching fails', async ({ page }) => {
   let mutationCalls = 0;
   await mockGraphql(page, {
-    CurrentInput: async (route) => {
-      await route.fulfill({ json: { data: { currentInput: 'GOOGLE_TV' } } });
+    Inputs: async (route) => {
+      await route.fulfill({ json: { data: { inputs: inputsFixture('APPLE_TV') } } });
     },
     SetInput: async (route) => {
       mutationCalls += 1;
@@ -107,12 +129,12 @@ test('shows a visible error and keeps prior state when switching fails', async (
   });
 
   await page.goto('/');
-  await expect(page.getByRole('button', { name: /google tv/i })).toHaveAttribute(
+  await expect(page.getByRole('button', { name: /apple tv/i })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
 
-  await page.getByRole('button', { name: /apple tv/i }).click();
+  await page.getByRole('button', { name: /pc/i }).click();
 
   const alert = page.getByRole('alert');
   await expect(alert).toContainText(/device unreachable/i);
@@ -120,14 +142,11 @@ test('shows a visible error and keeps prior state when switching fails', async (
 
   // The switch failed server-side, so the UI must still reflect the last
   // known-good state rather than silently claiming success.
-  await expect(page.getByRole('button', { name: /google tv/i })).toHaveAttribute(
+  await expect(page.getByRole('button', { name: /apple tv/i })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
-  await expect(page.getByRole('button', { name: /apple tv/i })).toHaveAttribute(
-    'aria-pressed',
-    'false',
-  );
+  await expect(page.getByRole('button', { name: /pc/i })).toHaveAttribute('aria-pressed', 'false');
 });
 
 // The only test in this file that's safe to run against the real, live app:
@@ -137,8 +156,8 @@ test('shows a visible error and keeps prior state when switching fails', async (
 test('shows exactly one active input on load', { tag: '@smoke' }, async ({ page }) => {
   if (MOCKS_ENABLED) {
     await mockGraphql(page, {
-      CurrentInput: async (route) => {
-        await route.fulfill({ json: { data: { currentInput: 'PS4' } } });
+      Inputs: async (route) => {
+        await route.fulfill({ json: { data: { inputs: inputsFixture('PS4') } } });
       },
     });
   }

@@ -78,6 +78,16 @@
   }
 }
 
+.input-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input-row--hero .input-button {
+  width: 100%;
+}
+
 .input-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -149,12 +159,6 @@
   background: var(--accent);
   padding: 3px 8px;
   border-radius: 999px;
-}
-
-/* Last item (odd count of 5) spans both columns so it isn't left dangling
-   alone in a lopsided single-column row. */
-.input-grid > :nth-child(5) {
-  grid-column: 1 / -1;
 }
 
 @media (min-width: 420px) {

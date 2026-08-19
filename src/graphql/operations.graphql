@@ -1,5 +1,11 @@
-query CurrentInput {
-  currentInput
+query Inputs {
+  inputs {
+    value
+    label
+    icon
+    hoverText
+    isActive
+  }
 }
 
 mutation SetInput($input: HdmiInput!) {
