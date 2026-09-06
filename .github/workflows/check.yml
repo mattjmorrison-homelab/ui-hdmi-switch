@@ -17,7 +17,7 @@ jobs:
       - run: npm run check
 
       - name: Validate the test-stage Dockerfile still builds
-        uses: mattjmorrison-homelab/actions-k8s@417ba5ccf6d3be8e24d4bc11f82618b1c280c967 # main
+        uses: mattjmorrison-homelab/actions-k8s@15aea08ba0b53348f3e5ae7c0408dade247eff35 # main
         with:
           service-account: ui-hdmi-switch-job
           image: gcr.io/kaniko-project/executor@sha256:4e7a52dd1f14872430652bb3b027405b8dfd17c4538751c620ac005741ef9698
@@ -27,7 +27,7 @@ jobs:
             --dockerfile=Dockerfile --target=test --no-push
 
       - name: Validate the release-stage Dockerfile still builds
-        uses: mattjmorrison-homelab/actions-k8s@417ba5ccf6d3be8e24d4bc11f82618b1c280c967 # main
+        uses: mattjmorrison-homelab/actions-k8s@15aea08ba0b53348f3e5ae7c0408dade247eff35 # main
         with:
           service-account: ui-hdmi-switch-job
           image: gcr.io/kaniko-project/executor@sha256:4e7a52dd1f14872430652bb3b027405b8dfd17c4538751c620ac005741ef9698
