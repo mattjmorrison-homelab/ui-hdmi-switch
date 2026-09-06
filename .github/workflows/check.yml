@@ -24,7 +24,7 @@ jobs:
           shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/${{ github.head_ref }}
-            --dockerfile=Dockerfile --skip-unused-stages=true --target=test --no-push
+            --dockerfile=Dockerfile --skip-unused-stages=true --force-build-metadata --target=test --no-push
 
       - name: Validate the release-stage Dockerfile still builds
         uses: mattjmorrison-homelab/actions-k8s@15aea08ba0b53348f3e5ae7c0408dade247eff35 # main
