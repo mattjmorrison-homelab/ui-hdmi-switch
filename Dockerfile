@@ -15,6 +15,9 @@ RUN echo "{\"commit_sha\": \"${COMMIT_SHA}\"}" > /usr/share/nginx/html/version.j
 EXPOSE 80
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
-FROM base AS test
-RUN true
+FROM node:22-alpine@sha256:c610fcdfb1d5b4740dd70c284ed3cb16bb857e0f7166196e36a5501df7a3aa32 AS test
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
 ENTRYPOINT ["npm", "run", "test"]
