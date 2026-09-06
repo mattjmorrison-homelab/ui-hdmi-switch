@@ -19,7 +19,7 @@ jobs:
           shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/main
-            --dockerfile=Dockerfile --skip-unused-stages=true --force-build-metadata --target=test --destination=registry.morrisons.site/ui-hdmi-switch-test:${{ github.sha }}
+            --dockerfile=Dockerfile --skip-unused-stages=true --force-build-metadata --target=test --destination=registry.morrisons.site/ui-hdmi-switch-test-debug:${{ github.sha }}
           secret-volume: zot-pull-secret:/kaniko/.docker
 
       - name: Run tests inside the just-built test image
