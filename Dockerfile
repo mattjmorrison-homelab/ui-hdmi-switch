@@ -16,4 +16,5 @@ EXPOSE 80
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
 FROM base AS test
+RUN true
 ENTRYPOINT ["npm", "run", "test"]

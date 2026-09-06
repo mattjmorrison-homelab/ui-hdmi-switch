@@ -19,8 +19,9 @@ jobs:
           shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/fix-kaniko-skip-unused-stages
-            --dockerfile=Dockerfile --skip-unused-stages=true --force-build-metadata --target=release --build-arg=COMMIT_SHA=debug --destination=registry.morrisons.site/ui-hdmi-switch-test-debug:${{ github.sha }}
+            --dockerfile=Dockerfile --skip-unused-stages=true --force-build-metadata --target=test --destination=registry.morrisons.site/ui-hdmi-switch-test-debug:${{ github.sha }}
           secret-volume: zot-pull-secret:/kaniko/.docker
+          active-deadline-seconds: "1800"
 
       - name: Run tests inside the just-built test image
         uses: mattjmorrison-homelab/actions-k8s@15aea08ba0b53348f3e5ae7c0408dade247eff35 # main
