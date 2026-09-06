@@ -12,7 +12,7 @@ jobs:
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "22"
+          node-version: '22'
       - run: npm ci
       - run: npm run check
 
@@ -21,7 +21,7 @@ jobs:
         with:
           service-account: ui-hdmi-switch-job
           image: gcr.io/kaniko-project/executor@sha256:4e7a52dd1f14872430652bb3b027405b8dfd17c4538751c620ac005741ef9698
-          shell: "false"
+          shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/${{ github.head_ref }}
             --dockerfile=Dockerfile --target=test --no-push
@@ -31,7 +31,7 @@ jobs:
         with:
           service-account: ui-hdmi-switch-job
           image: gcr.io/kaniko-project/executor@sha256:4e7a52dd1f14872430652bb3b027405b8dfd17c4538751c620ac005741ef9698
-          shell: "false"
+          shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/${{ github.head_ref }}
             --dockerfile=Dockerfile --target=release --build-arg=COMMIT_SHA=${{ github.event.pull_request.head.sha }} --no-push
