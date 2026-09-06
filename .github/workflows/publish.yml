@@ -3,7 +3,6 @@ name: Publish
 on:
   push:
     branches: [main]
-  workflow_dispatch:
 
 jobs:
   publish:
@@ -19,8 +18,9 @@ jobs:
           shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/main
-            --dockerfile=Dockerfile --target=test --destination=registry.morrisons.site/ui-hdmi-switch-test:${{ github.sha }}
+            --dockerfile=Dockerfile --skip-unused-stages=true --target=test --destination=registry.morrisons.site/ui-hdmi-switch-test:${{ github.sha }}
           secret-volume: zot-pull-secret:/kaniko/.docker
+          active-deadline-seconds: '1800'
 
       - name: Run tests inside the just-built test image
         uses: mattjmorrison-homelab/actions-k8s@15aea08ba0b53348f3e5ae7c0408dade247eff35 # main
@@ -37,9 +37,10 @@ jobs:
           shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/main
-            --dockerfile=Dockerfile --target=release --build-arg=COMMIT_SHA=${{ github.sha }}
+            --dockerfile=Dockerfile --skip-unused-stages=true --target=release --build-arg=COMMIT_SHA=${{ github.sha }}
             --destination=registry.morrisons.site/ui-hdmi-switch:${{ github.sha }}
           secret-volume: zot-pull-secret:/kaniko/.docker
+          active-deadline-seconds: '1800'
 
       - run: sh scripts/verify-deploy.sh
         env:

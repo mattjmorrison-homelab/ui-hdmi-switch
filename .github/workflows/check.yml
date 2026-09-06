@@ -24,7 +24,8 @@ jobs:
           shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/${{ github.head_ref }}
-            --dockerfile=Dockerfile --target=test --no-push
+            --dockerfile=Dockerfile --skip-unused-stages=true --target=test --no-push
+          active-deadline-seconds: '1800'
 
       - name: Validate the release-stage Dockerfile still builds
         uses: mattjmorrison-homelab/actions-k8s@15aea08ba0b53348f3e5ae7c0408dade247eff35 # main
@@ -34,4 +35,5 @@ jobs:
           shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/${{ github.head_ref }}
-            --dockerfile=Dockerfile --target=release --build-arg=COMMIT_SHA=${{ github.event.pull_request.head.sha }} --no-push
+            --dockerfile=Dockerfile --skip-unused-stages=true --target=release --build-arg=COMMIT_SHA=${{ github.event.pull_request.head.sha }} --no-push
+          active-deadline-seconds: '1800'
