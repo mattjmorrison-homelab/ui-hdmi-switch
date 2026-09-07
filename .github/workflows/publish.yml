@@ -10,6 +10,20 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Sync this repo's Discord webhook URL from admin-discord's state
+        uses: mattjmorrison-homelab/actions-tofu/fetch-credentials@e1ce533934189c35f74475d3e257fc2321b1cad7 # main
+      - id: read_discord_webhook
+        uses: mattjmorrison-homelab/actions-tofu/read-output@e1ce533934189c35f74475d3e257fc2321b1cad7 # main
+        with:
+          state-key: admin-discord/terraform.tfstate
+          output-name: webhook_urls
+          map-key: github-actions
+      - uses: mattjmorrison-homelab/actions-openbao/write-secret@0fe1624c376515aee139cc58ac8328d9921e21dd # main
+        with:
+          role: ui-hdmi-switch-discord
+          kv-path: homelab/ui-hdmi-switch/discord-webhook-url
+          value: ${{ steps.read_discord_webhook.outputs.value }}
+
       - name: Build and push the test-stage image
         uses: mattjmorrison-homelab/actions-k8s@15aea08ba0b53348f3e5ae7c0408dade247eff35 # main
         with:
