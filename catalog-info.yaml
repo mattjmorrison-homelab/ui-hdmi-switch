@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ui-hdmi-switch
+  annotations:
+    github.com/project-slug: mattjmorrison-homelab/ui-hdmi-switch
+spec:
+  type: website
+  owner: mattjmorrison-homelab
+  lifecycle: experimental
+  system: hdmi-switch
+  consumesApis: [hdmi-switch-graphql]
