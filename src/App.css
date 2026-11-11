@@ -7,8 +7,33 @@
 }
 
 .app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
   padding: max(20px, env(safe-area-inset-top)) 20px 12px;
   text-align: center;
+}
+
+.reload-button {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  right: 12px;
+  display: inline-flex;
+  background: none;
+  border: none;
+  color: var(--text-h);
+  opacity: 0.6;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.reload-button:hover {
+  opacity: 1;
+}
+
+.reload-button:active {
+  transform: scale(0.93);
 }
 
 .app-main {
