@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { AlertTriangle, Check, Loader2, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Check, Loader2, RefreshCw, RotateCw } from 'lucide-react';
 import { useInputsQuery, useSetInputMutation, type InputsQuery } from './graphql/generated';
 import type { HdmiInput } from './graphql/generated';
 import { ICONS, DEFAULT_ICON } from './inputs';
 import { errorMessage } from './errorMessage';
+import { reloadApp } from './reloadApp';
 import './App.css';
 
 type Input = InputsQuery['inputs'][number];
@@ -82,6 +83,15 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>HDMI Switch</h1>
+        <button
+          type="button"
+          className="reload-button"
+          onClick={() => reloadApp()}
+          aria-label="Reload app"
+          title="Reload app"
+        >
+          <RotateCw size={20} aria-hidden="true" />
+        </button>
       </header>
 
       <main className="app-main">

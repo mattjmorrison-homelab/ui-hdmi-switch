@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloProvider } from '@apollo/client';
@@ -172,5 +172,38 @@ describe('App', () => {
 
     const alert = await screen.findByRole('alert');
     expect(alert).toHaveTextContent(/did not confirm the change/i);
+  });
+
+  describe('reload button', () => {
+    const unregister = vi.fn().mockResolvedValue(undefined);
+    const getRegistrations = vi.fn().mockResolvedValue([{ unregister }]);
+    const cachesDelete = vi.fn().mockResolvedValue(true);
+    const cachesKeys = vi.fn().mockResolvedValue(['cache-v1']);
+    const reload = vi.fn();
+
+    beforeEach(() => {
+      vi.stubGlobal('navigator', { serviceWorker: { getRegistrations } });
+      vi.stubGlobal('caches', { keys: cachesKeys, delete: cachesDelete });
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: { ...window.location, reload },
+      });
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('unregisters service workers, clears caches, and reloads when clicked', async () => {
+      const user = userEvent.setup();
+      renderApp();
+
+      await user.click(screen.getByRole('button', { name: /reload app/i }));
+
+      await waitFor(() => expect(reload).toHaveBeenCalled());
+      expect(getRegistrations).toHaveBeenCalled();
+      expect(unregister).toHaveBeenCalled();
+      expect(cachesDelete).toHaveBeenCalledWith('cache-v1');
+    });
   });
 });
