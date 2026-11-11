@@ -22,9 +22,9 @@ export const DEFAULT_INPUTS = [
 // Default happy-path handlers. Individual tests override these with
 // `server.use(...)` to exercise loading/error paths.
 export const handlers = [
-  api.query('Inputs', () => HttpResponse.json({ data: { inputs: DEFAULT_INPUTS } })),
+  api.query('Inputs', () => HttpResponse.json({ data: { hdmi: { inputs: DEFAULT_INPUTS } } })),
   api.mutation('SetInput', ({ variables }) =>
-    HttpResponse.json({ data: { setInput: variables.input } }),
+    HttpResponse.json({ data: { hdmi: { setInput: variables.input } } }),
   ),
 ];
 

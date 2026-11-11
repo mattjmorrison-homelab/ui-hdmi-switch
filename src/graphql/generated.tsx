@@ -18,24 +18,26 @@ export type HdmiInput =
 export type InputsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type InputsQuery = { inputs: Array<{ value: HdmiInput, label: string, icon: string, hoverText: string, isActive: boolean }> };
+export type InputsQuery = { hdmi: { inputs: Array<{ value: HdmiInput, label: string, icon: string, hoverText: string, isActive: boolean }> } };
 
 export type SetInputMutationVariables = Exact<{
   input: HdmiInput;
 }>;
 
 
-export type SetInputMutation = { setInput: HdmiInput };
+export type SetInputMutation = { hdmi: { setInput: HdmiInput } };
 
 
 export const InputsDocument = gql`
     query Inputs {
-  inputs {
-    value
-    label
-    icon
-    hoverText
-    isActive
+  hdmi {
+    inputs {
+      value
+      label
+      icon
+      hoverText
+      isActive
+    }
   }
 }
     `;
@@ -76,7 +78,9 @@ export type InputsSuspenseQueryHookResult = ReturnType<typeof useInputsSuspenseQ
 export type InputsQueryResult = Apollo.QueryResult<InputsQuery, InputsQueryVariables>;
 export const SetInputDocument = gql`
     mutation SetInput($input: HdmiInput!) {
-  setInput(input: $input)
+  hdmi {
+    setInput(input: $input)
+  }
 }
     `;
 export type SetInputMutationFn = Apollo.MutationFunction<SetInputMutation, SetInputMutationVariables>;

@@ -7,7 +7,7 @@ import { errorMessage } from './errorMessage';
 import { reloadApp } from './reloadApp';
 import './App.css';
 
-type Input = InputsQuery['inputs'][number];
+type Input = InputsQuery['hdmi']['inputs'][number];
 
 function App() {
   const { data, loading, error, refetch } = useInputsQuery();
@@ -20,7 +20,7 @@ function App() {
   const [pendingInput, setPendingInput] = useState<HdmiInput | null>(null);
   const [switchError, setSwitchError] = useState<string | null>(null);
 
-  const inputs = data?.inputs ?? [];
+  const inputs = data?.hdmi?.inputs ?? [];
   const [heroInput, ...pairedInputs] = inputs;
 
   const handleSelect = async (value: HdmiInput, isCurrentlyActive: boolean) => {
@@ -35,8 +35,8 @@ function App() {
       const result = await setInput({ variables: { input: value } });
       // The mutation's return value is the source of truth for the new
       // state, not an assumption that the request we sent "worked".
-      if (result.data?.setInput) {
-        setSwitchedTo(result.data.setInput);
+      if (result.data?.hdmi?.setInput) {
+        setSwitchedTo(result.data.hdmi.setInput);
       } else {
         setSwitchError('The switch did not confirm the change. Please try again.');
       }
