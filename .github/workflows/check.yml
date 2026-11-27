@@ -16,7 +16,7 @@ jobs:
       - run: npm ci
       - run: npm run check
 
-      - name: Validate the test-stage Dockerfile still builds
+      - name: Build and push the test-stage image
         uses: mattjmorrison-homelab/actions-k8s@15aea08ba0b53348f3e5ae7c0408dade247eff35 # main
         with:
           service-account: ui-hdmi-switch-job
@@ -24,10 +24,18 @@ jobs:
           shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/${{ github.head_ref }}
-            --dockerfile=Dockerfile --skip-unused-stages=true --target=test --no-push
+            --dockerfile=Dockerfile --skip-unused-stages=true --target=test --destination=registry.morrisons.site/ui-hdmi-switch-test:pr-${{ github.event.pull_request.head.sha }}
+          secret-volume: ui-hdmi-switch-zot-pull-secret:/kaniko/.docker
           active-deadline-seconds: '1800'
 
-      - name: Validate the release-stage Dockerfile still builds
+      - name: Run tests inside the just-pushed PR-scoped test image
+        uses: mattjmorrison-homelab/actions-k8s@15aea08ba0b53348f3e5ae7c0408dade247eff35 # main
+        with:
+          service-account: ui-hdmi-switch-job
+          image: registry.morrisons.site/ui-hdmi-switch-test:pr-${{ github.event.pull_request.head.sha }}
+          command: npm run test
+
+      - name: Build and push the release image
         uses: mattjmorrison-homelab/actions-k8s@15aea08ba0b53348f3e5ae7c0408dade247eff35 # main
         with:
           service-account: ui-hdmi-switch-job
@@ -35,5 +43,6 @@ jobs:
           shell: 'false'
           command: >-
             --context=git://github.com/mattjmorrison-homelab/ui-hdmi-switch.git#refs/heads/${{ github.head_ref }}
-            --dockerfile=Dockerfile --skip-unused-stages=true --target=release --build-arg=COMMIT_SHA=${{ github.event.pull_request.head.sha }} --no-push
+            --dockerfile=Dockerfile --skip-unused-stages=true --target=release --build-arg=COMMIT_SHA=${{ github.event.pull_request.head.sha }} --destination=registry.morrisons.site/ui-hdmi-switch:pr-${{ github.event.pull_request.head.sha }}
+          secret-volume: ui-hdmi-switch-zot-pull-secret:/kaniko/.docker
           active-deadline-seconds: '1800'
