@@ -17,10 +17,18 @@ type Input {
   isActive: Boolean!
 }
 
-type Query {
+type HdmiQuery {
   inputs: [Input!]!
 }
 
-type Mutation {
+type HdmiMutation {
   setInput(input: HdmiInput!): HdmiInput!
+}
+
+type Query {
+  hdmi: HdmiQuery!
+}
+
+type Mutation {
+  hdmi: HdmiMutation!
 }

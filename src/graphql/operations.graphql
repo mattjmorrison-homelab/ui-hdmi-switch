@@ -1,13 +1,17 @@
 query Inputs {
-  inputs {
-    value
-    label
-    icon
-    hoverText
-    isActive
+  hdmi {
+    inputs {
+      value
+      label
+      icon
+      hoverText
+      isActive
+    }
   }
 }
 
 mutation SetInput($input: HdmiInput!) {
-  setInput(input: $input)
+  hdmi {
+    setInput(input: $input)
+  }
 }

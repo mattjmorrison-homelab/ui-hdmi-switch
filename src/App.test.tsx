@@ -47,7 +47,9 @@ describe('App', () => {
       api.query('Inputs', () =>
         HttpResponse.json({
           data: {
-            inputs: [{ ...DEFAULT_INPUTS[0], icon: 'some-future-icon-key-not-yet-mapped' }],
+            hdmi: {
+              inputs: [{ ...DEFAULT_INPUTS[0], icon: 'some-future-icon-key-not-yet-mapped' }],
+            },
           },
         }),
       ),
@@ -63,7 +65,7 @@ describe('App', () => {
     server.use(
       api.mutation('SetInput', async ({ variables }) => {
         await delay(50);
-        return HttpResponse.json({ data: { setInput: variables.input } });
+        return HttpResponse.json({ data: { hdmi: { setInput: variables.input } } });
       }),
     );
 
@@ -129,7 +131,7 @@ describe('App', () => {
     server.use(
       api.mutation('SetInput', ({ variables }) => {
         mutationCalled = true;
-        return HttpResponse.json({ data: { setInput: variables.input } });
+        return HttpResponse.json({ data: { hdmi: { setInput: variables.input } } });
       }),
     );
 
@@ -155,7 +157,9 @@ describe('App', () => {
 
     const retryButton = await screen.findByRole('button', { name: /retry/i });
 
-    server.use(api.query('Inputs', () => HttpResponse.json({ data: { inputs: DEFAULT_INPUTS } })));
+    server.use(
+      api.query('Inputs', () => HttpResponse.json({ data: { hdmi: { inputs: DEFAULT_INPUTS } } })),
+    );
     await user.click(retryButton);
 
     const ps4Button = await screen.findByRole('button', { name: /ps4/i });
@@ -163,7 +167,9 @@ describe('App', () => {
   });
 
   it('shows a visible error when the switch does not confirm the change', async () => {
-    server.use(api.mutation('SetInput', () => HttpResponse.json({ data: { setInput: null } })));
+    server.use(
+      api.mutation('SetInput', () => HttpResponse.json({ data: { hdmi: { setInput: null } } })),
+    );
 
     const user = userEvent.setup();
     renderApp();
